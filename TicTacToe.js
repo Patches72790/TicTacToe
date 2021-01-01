@@ -35,10 +35,14 @@ const Computer = (type) => {
     const prototype = Player(type, false);
     
     // evaluation function 
-    const evaluateMove = () => {};
+    const evaluateMove = () => {
+
+
+    };
     
     // minimax algorithm
     const minimax = (board, isHuman) => {
+
 
 
 
@@ -51,7 +55,6 @@ const Computer = (type) => {
     }; 
 
     return Object.assign({}, prototype, {makeMove});
-
 }
 
 
@@ -70,31 +73,131 @@ const GameBoard = (() => {
         [0, 0, 0]
     ];
 
-
+    const size = 3;
     let p1 = Player("X");
     p1.hasTurn = true;
     let p2 = Player("O");
-    let winner;
+    let winner = null;
     
 
     function setPlayerStates(player) {
+
         
 
     }
 
+    /**
+     * This function checks the game state for a win.
+     * 
+     * @returns true if game board is in winning state and sets the winner field
+     */
     function checkGameState () {
         let gameover = false;    
-    
         // check row win
-                
-        // check col win
+        for (var i = 0; i < size; i++) {
+            let p1count = 0;
+            let p2count = 0;
 
-        // check diagonal wins
- 
+            for (var j = 0; j < size; j++) {
+                if (board[i][j] == 1) 
+                    p1count++;
+                else if (board[i][j] == 2)
+                    p2count++;
+            }
+
+            if (p1count == size) {
+                gameover = true;
+                winner = p1;
+                return gameover;
+            }
+
+            else if (p2count == size) {
+                gameover = true;
+                winner = p2;
+                return gameover;
+            }
+        }
+
+        // check col win
+        for (var i = 0; i < size; i++) {
+            let p1count = 0;
+            let p2count = 0;
+
+            for (var j = 0; j < size; j++) {
+                if (board[j][i] == 1) 
+                    p1count++;
+                else if (board[j][i] == 2)
+                    p2count++;
+            }
+
+            if (p1count == size) {
+                gameover = true;
+                winner = p1;
+                return gameover;
+            }
+
+            else if (p2count == size) {
+                gameover = true;
+                winner = p2;
+                return gameover;
+            }
+        }
+
+        // check left diagonal
+        let p1count = 0;
+        let p2count = 0;
+        for (var i = 0, j = 0; i < size && j < size; i++, j++) {
+            if (board[i][j] == 1) 
+                p1count++;
+            else if (board[i][j] == 2)
+                p2count++;
+        }
+
+        if (p1count == size) {
+            gameover = true;
+            winner = p1;
+            return gameover;
+        }
+
+        else if (p2count == size) {
+            gameover = true;
+            winner = p2;
+            return gameover;
+        }
+
+        // check right diagonal
+        p1count = 0;
+        p2count = 0;
+
+        for (var i = 0, j = 2; i < size; i++, j--) {
+            if (board[i][j] == 1) 
+                p1count++;
+            else if (board[i][j] == 2)
+                p2count++;
+        }
+
+        if (p1count == size) {
+            gameover = true;
+            winner = p1;
+            return gameover;
+        }
+
+        else if (p2count == size) {
+            gameover = true;
+            winner = p2;
+            return gameover;
+        }
+
         return gameover;
     }
 
-
+    /**
+     * This function updates the board
+     * 
+     * @param {*} row - the row of the move to update
+     * @param {*} col - the col of move to update
+     * @returns the player type "X" or "O" of the move
+     */
     function updateBoard(row, col) {
         board[row][col] = (p1.hasTurn) ? 1 : 2;
         let player;
@@ -120,15 +223,26 @@ const GameBoard = (() => {
     // returns gameboard list
     const getBoard = () => board;
 
-    return { updateBoard, checkGameState, getBoard };
+    // returns the game winner
+    const getWinner = () => winner;
+
+    return { updateBoard, checkGameState, getBoard, getWinner };
 
 })();
 
 /**
- *
+ * 
  */
 function endGame() {
+    let winnerDiv = document.getElementById("winner");
+    let gameboard = document.getElementById("gameboardContainer");
 
+    let newHeading = document.createElement("h2");
+    newHeading.innerHTML = "Congratulations! " + GameBoard.getWinner() + " won the game!";
+    winnerDiv.appendChild(newHeading);
+
+    winnerDiv.style.display = "block";
+    gameboard.style.display = "none";
 
 }
 
@@ -185,6 +299,8 @@ function updateDOM(row, col) {
         let player = GameBoard.updateBoard(row, col);
         tableBox.innerHTML = player;
     }
+
+
 
     return tableBox;
 }
