@@ -59,16 +59,26 @@ const Computer = (type) => {
         return movesLeft;
     }
 
-    // minimax algorithm
-    const minimax = (board, isHuman) => {
-
-        let remainingMoves = getRemainingMoves(board);
+    /**
+     * Function for that utilizes the minimax algorithm
+     * the find the optimal move.
+     * 
+     * @param {number[][]} board - the current game board
+     * @param {number[][]} remainingMoves - the remaining moves left in the board
+     * @param {boolean} isHuman - true if is human turn, false if AI turn
+     */
+    const minimax = (board, remainingMoves, isHuman) => {
 
         // terminal state base case
         if (!remainingMoves) {
             return;
         }
 
+        // if ishuman minimize
+
+
+
+        // if isAI maximize
         
 
 
@@ -76,7 +86,14 @@ const Computer = (type) => {
 
     // interface function for making move
     const makeMove = () => {
-        let move = minimax(GameBoard.getBoard(), false);
+
+        let board = GameBoard.getBoard();
+        let remainingMoves = getRemainingMoves(board);
+
+        // find optimal move
+        let move = minimax(board, remainingMoves, false);
+
+        // add to moves array and return
         this.addMove(move[0], move[1])
         return move;
     }; 
@@ -244,21 +261,35 @@ const GameBoard = (() => {
         board[row][col] = (p1.hasTurn) ? 1 : 2;
         let player;
 
+        // p1 human
         if (p1.hasTurn) {
             p1.addMove(row, col);
             player = p1.playerType;
             p1.hasTurn = false;
             p2.hasTurn = true;
-        } else {
+        } 
+        // p2 human
+        else if (p2.isHuman) {
             p2.addMove(row, col);
             player = p2.playerType;
             p1.hasTurn = true;
             p2.hasTurn = false
+        } 
+
+        // AI move
+        else {
+            p2.makeMove();
+            player = p2.playerType;
+            p1.hasTurn = true;
+            p2.hasTurn = false;
         }
 
+        // check for winning game state
         if (checkGameState()) {
             endGame();
         }
+
+        // return player type for DOM
         return player;
     }
 
@@ -266,7 +297,7 @@ const GameBoard = (() => {
     const getBoard = () => board;
 
     // returns the game winner
-    const getWinner = () => winner.toString();
+    const getWinner = () => winner;
 
     return { updateBoard, checkGameState, getBoard, getWinner, setPlayerStates };
 
@@ -346,7 +377,7 @@ function updateDOM(row, col) {
     let table = document.getElementById("gameboardTable"); 
     let tableBox = table.children[row].children[col];
 
-    if (!tableBox.innerHTML) {
+    if (!tableBox.innerHTML && !GameBoard.getWinner()) {
         let player = GameBoard.updateBoard(row, col);
         tableBox.innerHTML = player;
     }
