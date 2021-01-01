@@ -22,7 +22,11 @@ const Player = (type, human) => {
         moves.push( [row, col]);
     };
 
-    return {playerType, hasTurn, addMove, isHuman};
+    const getMoves = () => { return moves }
+
+    const toString = () => { return playerType }
+
+    return {playerType, hasTurn, addMove, isHuman, getMoves, toString};
 };
 
 /**
@@ -71,19 +75,28 @@ const GameBoard = (() => {
     ];
 
     const size = 3;
-    let p1 = Player("X");
-    p1.hasTurn = true;
-    let p2 = Player("O");
+    let p1;
+    let p2;
     let winner = null;
     
-
     /**
      * This function sets the initial player types and their state.
      * 
-     * @param {Player} player 
+     * @param {string} p1Type 
+     * @param {string} p2Type
+     * @param {boolean} isAIOpponent
      */
-    function setPlayerStates(player) {
+    function setPlayerStates(p1Type, p2Type, isAIOpponent) {
 
+        // set p1
+        p1 = Player(p1Type, true);
+        p1.hasTurn = true;
+
+        // set p2 to either AI or human
+        if (isAIOpponent)
+            p2 = Computer(p2Type);
+        else
+            p2 = Player(p2Type, true);
     
     }
 
@@ -225,9 +238,9 @@ const GameBoard = (() => {
     const getBoard = () => board;
 
     // returns the game winner
-    const getWinner = () => winner;
+    const getWinner = () => winner.toString();
 
-    return { updateBoard, checkGameState, getBoard, getWinner };
+    return { updateBoard, checkGameState, getBoard, getWinner, setPlayerStates };
 
 })();
 
@@ -239,12 +252,12 @@ function endGame() {
     let gameboard = document.getElementById("gameboardContainer");
 
     let newHeading = document.createElement("h2");
-    newHeading.innerHTML = "Congratulations! " + GameBoard.getWinner() + " won the game!";
+    newHeading.innerHTML = "Congratulations! Player " + GameBoard.getWinner() + " won the game!";
     winnerDiv.appendChild(newHeading);
 
     // updates display
     winnerDiv.style.display = "block";
-    gameboard.style.display = "none";
+    // gameboard.style.display = "none";
 }
 
 
@@ -254,9 +267,6 @@ function endGame() {
  *
  */
 function createDOM() {
-
-    // select players for game
-    selectPlayer();
 
     // sets up game board
     let gameBoardElement = document.getElementById("gameboardContainer");
@@ -289,6 +299,9 @@ function createDOM() {
         return table;
     })();
 
+    // set display
+    gameBoardElement.style.display = "block";
+
     // replace empty table with new table in DOM
     gameBoardElement.replaceChild(newTable, oldTable);
 }
@@ -320,15 +333,29 @@ function updateDOM(row, col) {
  * 
  */
 const selectPlayer = () => {
-    
-    //let player = prompt("Select Player Type: X or O");
-    let selectElement = document.getElementById("selectPlayer");
 
+    //get the form data from selector form
+    let playerForm = document.querySelector("form").children;
+    let isAIOpponent = playerForm[2].childNodes[1].checked;
 
-    //alert(player);
+    // if player selected X
+    if (playerForm[0].childNodes[1].checked) {
+        GameBoard.setPlayerStates("X", "O", isAIOpponent);
+    }
+    // player selected O
+    else if (playerForm[1].childNodes[1].checked) {
+        GameBoard.setPlayerStates("O", "X", isAIOpponent);
+    }
 
-    //GameBoard.setPlayerStates(player);
+    // neither was checked return
+    else {
+        return;
+    }
 
+    // set up the board DOM
+    createDOM();
 
+    // set selector display to nothing
+    document.getElementById("selectPlayer").remove();
 }
 

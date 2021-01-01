@@ -5,32 +5,37 @@
         <link href="style.css" rel="stylesheet">
     </head>
 
-    <body onload="createDOM()">
+    <body >
+        <!-- onload="createDOM()" -->
 
+        <!-- Select Player View -->
         <div id="selectPlayer">
             <h2>Select Your Player Type</h2>
-            <label for="player">
-                Player X
-                <input type="radio" name="player"></input>
-            </label>
-            <label for="player">
-                Player O
-                <input type="radio" name="player"></input>
-            </label>
-            <label for="AI">
-                Play against AI?
-                <input type="checkbox" name="AI"></input>
-            </label>
+            <form id="playerForm">
+                <label for="player">
+                    Player X
+                    <input type="radio" name="player"></input>
+                </label>
+                <label for="player">
+                    Player O
+                    <input type="radio" name="player"></input>
+                </label>
+                <label for="AI">
+                    Play against AI?
+                    <input type="checkbox" name="AI"></input>
+                </label>
+                <button type="submit" name="start" onclick="selectPlayer()">Start Game!</button>
+            </form>
         </div>
 
+        <!-- Used for showing the winner -->
         <div id="winner">
         </div>
 
-        <div id="gameboardContainer" style="display: none">
+        <!-- Container for gameboard -->
+        <div id="gameboardContainer">
             <table id="gameboardTable"></table>
         </div>
-
-
 
         <script src="TicTacToe.js"></script>
     </body>
