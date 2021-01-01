@@ -17,6 +17,26 @@
 
 }
 
+#selectPlayer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    margin: auto;
+    position: relative;
+    width: 50%;
+    text-align: center;
+}
+
+#selectPlayer input {
+    float: left;
+}
+
+#selectPlayer label {
+    float: right;
+}
+
 table { 
 
     margin: 0;

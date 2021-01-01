@@ -7,11 +7,26 @@
 
     <body onload="createDOM()">
 
-        <div id="winner">
-
+        <div id="selectPlayer">
+            <h2>Select Your Player Type</h2>
+            <label for="player">
+                Player X
+                <input type="radio" name="player"></input>
+            </label>
+            <label for="player">
+                Player O
+                <input type="radio" name="player"></input>
+            </label>
+            <label for="AI">
+                Play against AI?
+                <input type="checkbox" name="AI"></input>
+            </label>
         </div>
 
-        <div id="gameboardContainer">
+        <div id="winner">
+        </div>
+
+        <div id="gameboardContainer" style="display: none">
             <table id="gameboardTable"></table>
         </div>
 

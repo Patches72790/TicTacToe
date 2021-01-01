@@ -37,14 +37,10 @@ const Computer = (type) => {
     // evaluation function 
     const evaluateMove = () => {
 
-
-    };
+    }
     
     // minimax algorithm
     const minimax = (board, isHuman) => {
-
-
-
 
     }
 
@@ -59,7 +55,8 @@ const Computer = (type) => {
 
 
 /**
- * 
+ * This factory function module contains the gameboard data structure
+ * and all relevant data for maintaining the tictac toe board.
  */
 const GameBoard = (() => {
 
@@ -80,10 +77,14 @@ const GameBoard = (() => {
     let winner = null;
     
 
+    /**
+     * This function sets the initial player types and their state.
+     * 
+     * @param {Player} player 
+     */
     function setPlayerStates(player) {
 
-        
-
+    
     }
 
     /**
@@ -192,7 +193,7 @@ const GameBoard = (() => {
     }
 
     /**
-     * This function updates the board
+     * This function updates the board array to reflect player move.
      * 
      * @param {*} row - the row of the move to update
      * @param {*} col - the col of move to update
@@ -231,7 +232,7 @@ const GameBoard = (() => {
 })();
 
 /**
- * 
+ * Updates the DOM and ends the game showing the winner!
  */
 function endGame() {
     let winnerDiv = document.getElementById("winner");
@@ -241,9 +242,9 @@ function endGame() {
     newHeading.innerHTML = "Congratulations! " + GameBoard.getWinner() + " won the game!";
     winnerDiv.appendChild(newHeading);
 
+    // updates display
     winnerDiv.style.display = "block";
     gameboard.style.display = "none";
-
 }
 
 
@@ -254,6 +255,10 @@ function endGame() {
  */
 function createDOM() {
 
+    // select players for game
+    selectPlayer();
+
+    // sets up game board
     let gameBoardElement = document.getElementById("gameboardContainer");
     let oldTable = document.getElementById("gameboardTable");
     let currentBoard = GameBoard.getBoard();
@@ -284,12 +289,17 @@ function createDOM() {
         return table;
     })();
 
-    selectPlayer();
-
-    // replace empty table with new table
-    gameBoardElement.replaceChild(newTable, oldTable); 
+    // replace empty table with new table in DOM
+    gameBoardElement.replaceChild(newTable, oldTable);
 }
 
+/**
+ * This function is called to update the DOM display and 
+ * update the gameboard data structure containing the board data.
+ * 
+ * @param {int} row 
+ * @param {int} col 
+ */
 function updateDOM(row, col) {
 
     let table = document.getElementById("gameboardTable"); 
@@ -299,8 +309,6 @@ function updateDOM(row, col) {
         let player = GameBoard.updateBoard(row, col);
         tableBox.innerHTML = player;
     }
-
-
 
     return tableBox;
 }
@@ -314,7 +322,9 @@ function updateDOM(row, col) {
 const selectPlayer = () => {
     
     //let player = prompt("Select Player Type: X or O");
-    
+    let selectElement = document.getElementById("selectPlayer");
+
+
     //alert(player);
 
     //GameBoard.setPlayerStates(player);
