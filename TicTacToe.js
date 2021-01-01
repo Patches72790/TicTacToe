@@ -43,14 +43,41 @@ const Computer = (type) => {
 
     }
     
+    /** Determines the remaining moves left in the board
+     * @param board reference to a gameboard array
+     * @returns a list of remaining moves left on board
+     */ 
+    const getRemainingMoves = (board) => {
+        let movesLeft = [];
+
+        for (var i = 0; i < 3; i++)
+            for (var j = 0; j < 3; j++)
+                if (!board[i][j]) {
+                    movesLeft.push([i, j]);
+                }
+                    
+        return movesLeft;
+    }
+
     // minimax algorithm
     const minimax = (board, isHuman) => {
+
+        let remainingMoves = getRemainingMoves(board);
+
+        // terminal state base case
+        if (!remainingMoves) {
+            return;
+        }
+
+        
+
 
     }
 
     // interface function for making move
     const makeMove = () => {
         let move = minimax(GameBoard.getBoard(), false);
+        this.addMove(move[0], move[1])
         return move;
     }; 
 
@@ -208,11 +235,12 @@ const GameBoard = (() => {
     /**
      * This function updates the board array to reflect player move.
      * 
-     * @param {*} row - the row of the move to update
-     * @param {*} col - the col of move to update
+     * @param {int} row - the row of the move to update
+     * @param {int} col - the col of move to update
      * @returns the player type "X" or "O" of the move
      */
     function updateBoard(row, col) {
+
         board[row][col] = (p1.hasTurn) ? 1 : 2;
         let player;
 

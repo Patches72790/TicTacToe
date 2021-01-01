@@ -42,19 +42,16 @@
 }
 
 table { 
-
     margin: 0;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 200px;
-    height: 200px ;
+    width: 300px;
+    height: 300px ;
 }
 
-
 tr, td {
-
     text-align: center;
     width: 10%;
     height: 10%;
