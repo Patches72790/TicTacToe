@@ -200,8 +200,8 @@ const Computer = (type) => {
         // if isAI maximize choice
         if (!isHuman) {
             let minInfinity = -10000;
-            var bestValue;
-            var newMove;
+            let bestValue;
+            let newMove;
             let length = remainingMoves.length;
 
             // iterate through remaining moves of board
@@ -225,8 +225,8 @@ const Computer = (type) => {
         // if isHuman minimize choice
         else {
             let maxInfinity = 10000;
-            var bestValue;
-            var newMove;
+            let bestValue;
+            let newMove;
             let length = remainingMoves.length;
 
             // work through remaining moves of board
@@ -270,21 +270,21 @@ const Computer = (type) => {
 
         let board = makeDeepCopy();
         let remainingMoves = getRemainingMoves(board);
-        var bestValue = -10000;
-        var bestMove;
+        let bestValue = -10000;
+        let bestMove;
 
-        // find optimal move and clear map 
+        // find optimal move from remaining moves
         let length = remainingMoves.length;
 
         for (var i = 0; i < length; i++) {
 
-            var newMove = remainingMoves.shift();
+            let newMove = remainingMoves.shift();
             board = addResultMove(board, newMove, false);
 
-            var currentValue = minimax(board, false);
+            let currentValue = minimax(board, false);
             board[newMove[0]][newMove[1]] = 0;
 
-            if (currentValue >= bestValue) {
+            if (currentValue > bestValue) {
                 bestValue = currentValue;
                 bestMove = newMove;
             }
@@ -321,7 +321,13 @@ const GameBoard = (() => {
     let p1;
     let p2;
     let winner = null;
+    let numMoves = 0;
     
+    /**
+     * Returns whether there is a tie for this game.
+     */
+    const gameIsTie = () => numMoves == (size * size);
+
     /**
      * Getter function for detecting whether gameboard
      * has an AI player 2.
@@ -479,8 +485,9 @@ const GameBoard = (() => {
             let type = p2.playerType;
             p1.hasTurn = true;
             p2.hasTurn = false;
+            numMoves++;
 
-            if (checkGameState()) {
+            if (checkGameState() || gameIsTie()) {
                 endGame();
             }
 
@@ -489,6 +496,7 @@ const GameBoard = (() => {
 
         // else human opponent
         board[row][col] = (p1.hasTurn) ? p1.playerType : p2.playerType;
+        numMoves++;
         let player;
 
         // p1 human
@@ -507,7 +515,7 @@ const GameBoard = (() => {
         } 
 
         // check for winning game state
-        if (checkGameState()) {
+        if (checkGameState() || gameIsTie()) {
             endGame();
         }
 
@@ -521,7 +529,7 @@ const GameBoard = (() => {
     // returns the game winner
     const getWinner = () => winner;
 
-    return { updateBoard, checkGameState, getBoard, getWinner, setPlayerStates, hasAIOpponent };
+    return { updateBoard, checkGameState, getBoard, getWinner, setPlayerStates, hasAIOpponent, gameIsTie };
 
 })();
 
@@ -533,7 +541,12 @@ function endGame() {
     let gameboard = document.getElementById("gameboardContainer");
 
     let newHeading = document.createElement("h2");
-    newHeading.innerHTML = "Congratulations! Player " + GameBoard.getWinner() + " won the game!";
+
+    if (GameBoard.getWinner())
+        newHeading.innerHTML = "Congratulations! Player " + GameBoard.getWinner() + " won the game!";
+    else 
+        newHeading.innerHTML = "Tie Game! Better luck next time!";
+
     winnerDiv.appendChild(newHeading);
 
     // updates display
@@ -604,7 +617,7 @@ function updateDOM(row, col) {
         tableBox.innerHTML = player;
 
         //TODO need to figure out how to update DOM with AI move
-        if (GameBoard.hasAIOpponent() && !GameBoard.getWinner() ) {
+        if (GameBoard.hasAIOpponent() && !GameBoard.getWinner() && !GameBoard.gameIsTie() ) {
             let aiMove = GameBoard.updateBoard(-1, -1);
             let moveIndices = aiMove["move"];
 
