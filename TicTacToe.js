@@ -37,26 +37,154 @@ const Player = (type, human) => {
 const Computer = (type) => {
 
     const prototype = Player(type, false);
-    
-    // evaluation function 
-    const evaluateMove = () => {
 
-    }
     
     /** Determines the remaining moves left in the board
-     * @param board reference to a gameboard array
+     * @param {number[][]} board reference to a gameboard array
      * @returns a list of remaining moves left on board
      */ 
     const getRemainingMoves = (board) => {
         let movesLeft = [];
 
-        for (var i = 0; i < 3; i++)
-            for (var j = 0; j < 3; j++)
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 3; j++) {
                 if (!board[i][j]) {
                     movesLeft.push([i, j]);
                 }
-                    
+            }
+        }
         return movesLeft;
+    }
+
+    /**
+     * This function adds a new move from the remaining moves array to the
+     * board.
+     * 
+     * @param {number[][]} board the board to be added to
+     * @param {number[]} newMove the new move
+     * @param {boolean} isHuman 
+     */
+    const addResultMove = (board, newMove, isHuman) => {
+        let humanType = (type == "X") ? "O" : "X";
+        let playerType = (!isHuman) ? type : humanType;
+
+        board[newMove[0]][newMove[1]] = playerType;
+        return board;
+    }
+
+    /**
+     * This function returns whether the game board is
+     * currently in a winning or terminal state.
+     * 
+     * @param {number[][]} board 
+     * @param {number[][]} remainingMoves 
+     */
+    const boardIsTerminal = (board, remainingMoves) => {
+        // tie
+        return !remainingMoves ||
+        // row wins
+        (board[0][0] && board[0][1] && board[0][2]) ||
+        (board[1][0] && board[1][1] && board[1][2]) ||
+        (board[2][0] && board[2][1] && board[2][2]) ||
+        // col wins
+        (board[0][0] && board[1][0] && board[2][0]) ||
+        (board[0][1] && board[1][1] && board[2][1]) ||
+        (board[0][2] && board[1][2] && board[2][2]) ||
+        // diagonal wins
+        (board[0][0] && board[1][1] && board[2][2]) ||
+        (board[0][2] && board[1][1] && board[2][0]);
+    }
+
+    /**
+     * p1 is always computer, it returns +1.
+     * p2 is always opponent and returns -1.
+     * Ties return 0.
+     * 
+     * @param {number[][]} board 
+     */
+    function getBoardUtility(board) {
+        let size = 3;
+
+
+        for (var i = 0; i < size; i++) {
+            let p1count = 0;
+            let p2count = 0;
+
+            for (var j = 0; j < size; j++) {
+                if (board[i][j] == type) 
+                    p1count++;
+                else if (board[i][j])
+                    p2count++;
+            }
+
+            if (p1count == size) {
+                return 1;
+            }
+
+            else if (p2count == size) {
+                return -1;
+            }
+        }
+
+        // check col win
+        for (var i = 0; i < size; i++) {
+            let p1count = 0;
+            let p2count = 0;
+
+            for (var j = 0; j < size; j++) {
+                if (board[j][i] == type) 
+                    p1count++;
+                else if (board[j][i])
+                    p2count++;
+            }
+
+            if (p1count == size) {
+                return 1;
+            }
+
+            else if (p2count == size) {
+                return -1;
+            }
+        }
+
+        // check left diagonal
+        let p1count = 0;
+        let p2count = 0;
+        for (var i = 0, j = 0; i < size && j < size; i++, j++) {
+            if (board[i][j] == type) 
+                p1count++;
+            else if (board[i][j])
+                p2count++;
+        }
+
+        if (p1count == size) {
+            return 1;
+        }
+
+        else if (p2count == size) {
+            return -1;
+        }
+
+        // check right diagonal
+        p1count = 0;
+        p2count = 0;
+
+        for (var i = 0, j = 2; i < size; i++, j--) {
+            if (board[i][j] == type) 
+                p1count++;
+            else if (board[i][j])
+                p2count++;
+        }
+
+        if (p1count == size) {
+            return 1;
+        }
+
+        else if (p2count == size) {
+            return -1;
+        }
+        // a tie game
+        return 0;
     }
 
     /**
@@ -69,25 +197,46 @@ const Computer = (type) => {
      */
     const minimax = (board, remainingMoves, isHuman) => {
 
-        // terminal state base case
-        if (!remainingMoves) {
-            return;
+        // terminal state base case returns the utility of the board
+        if (boardIsTerminal(board, remainingMoves)) {
+            let boardValue = getBoardUtility(board);
+            return boardValue;
         }
 
-        // if ishuman minimize
+        // make new move
+        board = addResultMove(board, remainingMoves.pop(), isHuman);
 
+
+        // if ishuman minimize
 
 
         // if isAI maximize
         
 
+    }
 
+    /**
+     * Helper function to create a deep copy of the game board from
+     * the GameBoard class.
+     * 
+     * @returns the deep copy of the board
+     */
+    function makeDeepCopy() {
+        let newArray = [[], [], []];
+        let board = GameBoard.getBoard();
+
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 3; j++) {
+                newArray[i][j] = board[i][j];
+            }
+        }
+        return newArray;
     }
 
     // interface function for making move
     const makeMove = () => {
 
-        let board = GameBoard.getBoard();
+        let board = makeDeepCopy();
         let remainingMoves = getRemainingMoves(board);
 
         // find optimal move
@@ -98,7 +247,8 @@ const Computer = (type) => {
         return move;
     }; 
 
-    return Object.assign({}, prototype, {makeMove});
+    let interface = {makeMove, makeDeepCopy, minimax, boardIsTerminal, getRemainingMoves, getBoardUtility, addResultMove}
+    return Object.assign({}, prototype, interface);
 }
 
 
@@ -110,14 +260,15 @@ const GameBoard = (() => {
 
     // 2d array holding board
     // 0 - empty
-    // 1 - X
-    // 2 - O
+    // X
+    // O
     let board = [
         [0, 0, 0],
         [0, 0, 0],
         [0, 0, 0]
     ];
 
+    // fields for GameBaord class
     const size = 3;
     let p1;
     let p2;
@@ -157,9 +308,9 @@ const GameBoard = (() => {
             let p2count = 0;
 
             for (var j = 0; j < size; j++) {
-                if (board[i][j] == 1) 
+                if (board[i][j] == p1.playerType) 
                     p1count++;
-                else if (board[i][j] == 2)
+                else if (board[i][j] == p2.playerType)
                     p2count++;
             }
 
@@ -182,9 +333,9 @@ const GameBoard = (() => {
             let p2count = 0;
 
             for (var j = 0; j < size; j++) {
-                if (board[j][i] == 1) 
+                if (board[j][i] == p1.playerType) 
                     p1count++;
-                else if (board[j][i] == 2)
+                else if (board[j][i] == p2.playerType)
                     p2count++;
             }
 
@@ -205,9 +356,9 @@ const GameBoard = (() => {
         let p1count = 0;
         let p2count = 0;
         for (var i = 0, j = 0; i < size && j < size; i++, j++) {
-            if (board[i][j] == 1) 
+            if (board[i][j] == p1.playerType) 
                 p1count++;
-            else if (board[i][j] == 2)
+            else if (board[i][j] == p2.playerType)
                 p2count++;
         }
 
@@ -228,9 +379,9 @@ const GameBoard = (() => {
         p2count = 0;
 
         for (var i = 0, j = 2; i < size; i++, j--) {
-            if (board[i][j] == 1) 
+            if (board[i][j] == p1.playerType) 
                 p1count++;
-            else if (board[i][j] == 2)
+            else if (board[i][j] == p2.playerType)
                 p2count++;
         }
 
@@ -258,7 +409,7 @@ const GameBoard = (() => {
      */
     function updateBoard(row, col) {
 
-        board[row][col] = (p1.hasTurn) ? 1 : 2;
+        board[row][col] = (p1.hasTurn) ? p1.playerType : p2.playerType;
         let player;
 
         // p1 human
@@ -418,3 +569,15 @@ const selectPlayer = () => {
     document.getElementById("selectPlayer").remove();
 }
 
+
+let abc = Computer("X");
+let board = [[0, 0, "0"],
+             ["X", "X", "0"], 
+             [0, 0, "0"]];
+
+let move = [0, 0];
+board = abc.addResultMove(board, move, false);
+console.log(board);
+
+let moves = abc.getRemainingMoves(board);
+console.log(moves);
