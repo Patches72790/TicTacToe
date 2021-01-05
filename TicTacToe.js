@@ -218,6 +218,7 @@ const Computer = (type) => {
                 board[newMove[0]][newMove[1]] = 0;
             }
 
+            // return maximum choice
             return bestValue;
         }
 
@@ -243,6 +244,7 @@ const Computer = (type) => {
                 board[newMove[0]][newMove[1]] = 0;
             }
 
+            // return minimum choice
             return bestValue;
         }
     }
